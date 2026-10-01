@@ -25,3 +25,7 @@ python main.py
 ```
 
 Swagger UI: `http://127.0.0.1:8000/docs`
+
+## Documentação de segurança
+
+- [Exercício 3 — análise CIA, frameworks e DFD](docs/exercicio_3_modelagem_seguranca.md)
