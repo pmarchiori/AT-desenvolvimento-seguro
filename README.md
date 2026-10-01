@@ -30,3 +30,4 @@ Swagger UI: `http://127.0.0.1:8000/docs`
 
 - [Exercício 3 — análise CIA e DFD](docs/ex3_analise_cia_dfd.md)
 - [Exercício 4 — threat model STRIDE](docs/ex4_threat_model_stride.md)
+- [Exercício 5 — arquitetura de segurança](docs/ex5_arquitetura_seguranca.md)
