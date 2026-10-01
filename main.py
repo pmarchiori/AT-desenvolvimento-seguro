@@ -1,28 +1,23 @@
-from contextlib import asynccontextmanager
-
 import uvicorn
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
 
 from database.connection import conn
-from routes.consultas import consulta_router
+from routes.appointments import appointment_router
+from routes.patients import patient_router
+from routes.users import user_router
 
+app = FastAPI(
+    title="API de Agendamento Clínico",
+    on_startup=[conn],
+)
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    conn()
-    yield
-
-
-app = FastAPI(lifespan=lifespan)
-
-app.include_router(consulta_router, prefix="/consultas")
-
+app.include_router(user_router, prefix="/user")
+app.include_router(patient_router, prefix="/patient")
+app.include_router(appointment_router, prefix="/appointment")
 
 @app.get("/")
 async def home():
-    return RedirectResponse(url="/consultas/")
+    return {"message": "Bem-vindo à API da Clínica!"}
 
-
-if __name__ == '__main__':
-    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

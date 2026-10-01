@@ -1,21 +1,27 @@
-## Preparação do ambiente
+# API de Agendamento Clínico
+
+Projeto baseado no starter kit `clinica-api-assessment` fornecido para o Assessment.
+
+## Ambiente
+
+O starter kit requer Python 3.10 ou 3.11.
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
+python3.10 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
-## Execução da API
+## Executar os testes
 
 ```bash
-uvicorn main:app --reload --port 8080
+python -m pytest -v
 ```
 
-A documentação interativa estará em `http://127.0.0.1:8080/docs`.
-
-## Testes
+## Executar a API
 
 ```bash
-pytest
+python main.py
 ```
+
+Swagger UI: `http://127.0.0.1:8000/docs`

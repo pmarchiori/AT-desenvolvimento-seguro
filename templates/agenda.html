@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Agenda do dia{% endblock %}
+
+{% block content %}
+<h1>Agenda de {{ date.strftime("%d/%m/%Y") }}</h1>
+{% if appointments %}
+<table>
+  <thead>
+    <tr><th>Horário</th><th>Paciente</th><th>Profissional</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    {% for appointment in appointments %}
+    <tr>
+      <td>{{ appointment.date_time.strftime("%H:%M") }}</td>
+      <td>{{ appointment.patient_id }}</td>
+      <td>{{ appointment.professional_id }}</td>
+      <td>{{ appointment.status }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Nenhuma consulta agendada para hoje.</p>
+{% endif %}
+{% endblock %}
