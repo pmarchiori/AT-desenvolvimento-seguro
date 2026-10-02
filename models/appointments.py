@@ -1,7 +1,8 @@
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Literal, Optional
 
 from sqlmodel import Field, SQLModel
+from models.base import StrictInputModel
 
 class Appointment(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -14,16 +15,16 @@ class Appointment(SQLModel, table=True):
         default_factory=lambda: datetime.now(timezone.utc), nullable=False
     )
 
-class AppointmentCreate(SQLModel):
-    patient_id: int
+class AppointmentCreate(StrictInputModel):
+    patient_id: int = Field(gt=0)
     date_time: datetime
-    notes: Optional[str] = None
+    notes: Optional[str] = Field(default=None, max_length=500, regex=r"^[^<>]*$")
 
-class AppointmentUpdate(SQLModel):
-    patient_id: Optional[int] = None
+class AppointmentUpdate(StrictInputModel):
+    patient_id: Optional[int] = Field(default=None, gt=0)
     date_time: Optional[datetime] = None
-    status: Optional[str] = None
-    notes: Optional[str] = None
+    status: Optional[Literal["agendada", "cancelada", "concluida"]] = None
+    notes: Optional[str] = Field(default=None, max_length=500, regex=r"^[^<>]*$")
 
 class AppointmentResponse(SQLModel):
     id: int

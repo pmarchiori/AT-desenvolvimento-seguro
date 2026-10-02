@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 from sqlmodel import Session, func, select
 
 from auth.rbac import RoleChecker
+from auth.ownership import appointment_with_ownership
 from database.connection import get_session
 from models.appointments import (
     Appointment,
@@ -17,21 +18,15 @@ from models.patients import Patient
 from models.users import User
 
 appointment_router = APIRouter(tags=["Appointments"])
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="templates", autoescape=True)
 
 allow_create = RoleChecker(["profissional"])
 allow_read = RoleChecker(["admin", "recepcionista", "profissional"])
 allow_manage = RoleChecker(["profissional"])
-
-def ensure_ownership(appointment: Appointment, current_user: User) -> None:
-    if (
-        current_user.role == "profissional"
-        and appointment.professional_id != current_user.id
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Acesso permitido somente às próprias consultas",
-        )
+read_owned_appointment = appointment_with_ownership(
+    ["admin", "recepcionista", "profissional"]
+)
+manage_owned_appointment = appointment_with_ownership(["profissional"])
 
 def ensure_patient_ownership(
     patient_id: int,
@@ -100,14 +95,8 @@ async def show_daily_schedule(
 
 @appointment_router.get("/{appointment_id}", response_model=AppointmentResponse)
 async def get_appointment(
-    appointment_id: int,
-    session: Session = Depends(get_session),
-    current_user: User = Depends(allow_read),
+    appointment: Appointment = Depends(read_owned_appointment),
 ):
-    appointment = session.get(Appointment, appointment_id)
-    if appointment is None:
-        raise HTTPException(status_code=404, detail="Consulta não encontrada")
-    ensure_ownership(appointment, current_user)
     return appointment
 
 @appointment_router.put(
@@ -115,16 +104,11 @@ async def get_appointment(
     response_model=AppointmentResponse,
 )
 async def update_appointment(
-    appointment_id: int,
     data: AppointmentUpdate,
+    appointment: Appointment = Depends(manage_owned_appointment),
     session: Session = Depends(get_session),
     current_user: User = Depends(allow_manage),
 ):
-    appointment = session.get(Appointment, appointment_id)
-    if appointment is None:
-        raise HTTPException(status_code=404, detail="Consulta não encontrada")
-    ensure_ownership(appointment, current_user)
-
     update_data = data.dict(exclude_unset=True)
     if "patient_id" in update_data:
         ensure_patient_ownership(update_data["patient_id"], current_user, session)
@@ -140,14 +124,9 @@ async def update_appointment(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_appointment(
-    appointment_id: int,
+    appointment: Appointment = Depends(manage_owned_appointment),
     session: Session = Depends(get_session),
-    current_user: User = Depends(allow_manage),
 ):
-    appointment = session.get(Appointment, appointment_id)
-    if appointment is None:
-        raise HTTPException(status_code=404, detail="Consulta não encontrada")
-    ensure_ownership(appointment, current_user)
     session.delete(appointment)
     session.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)

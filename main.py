@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 load_dotenv()
 
+from auth.jwt_middleware import JWTMiddleware
 from database.connection import conn
 from routes.appointments import appointment_router
 from routes.integrations import integration_router
@@ -13,6 +14,7 @@ app = FastAPI(
     title="API de Agendamento Clínico",
     on_startup=[conn],
 )
+app.add_middleware(JWTMiddleware)
 
 app.include_router(user_router, prefix="/user")
 app.include_router(patient_router, prefix="/patient")
