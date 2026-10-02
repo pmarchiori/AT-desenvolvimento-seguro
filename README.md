@@ -45,3 +45,4 @@ Swagger UI: `http://127.0.0.1:8000/docs`
 - [Exercício 5 — arquitetura de segurança](docs/ex5_arquitetura_seguranca.md)
 - [Exercício 8 — vulnerabilidades OWASP](docs/ex8_vulnerabilidades_owasp.md)
 - [Exercício 12 — pipeline DevSecOps](docs/ex12_pipeline_devsecops.md)
+- [Exercício 13 — relatório final](docs/ex13_relatorio_final.md)
