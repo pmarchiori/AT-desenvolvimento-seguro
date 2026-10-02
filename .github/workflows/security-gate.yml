@@ -25,7 +25,7 @@ jobs:
 
       - name: Executar testes
         env:
-          DATABASE_URL: sqlite:///:memory:
+          DATABASE_URL: "sqlite:///:memory:"
           SECRET_KEY: chave-exclusiva-do-ci-com-tamanho-adequado
           MFA_CODE: "123456"
           LAB_CLIENT_ID: laboratorio-teste
@@ -47,7 +47,7 @@ jobs:
 
       - name: Iniciar API
         env:
-          DATABASE_URL: sqlite:////tmp/clinica-ci.db
+          DATABASE_URL: "sqlite:////tmp/clinica-ci.db"
           SECRET_KEY: chave-exclusiva-do-ci-com-tamanho-adequado
           MFA_CODE: "123456"
           LAB_CLIENT_ID: laboratorio-teste
