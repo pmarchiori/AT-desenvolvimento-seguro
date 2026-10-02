@@ -16,13 +16,11 @@ class Appointment(SQLModel, table=True):
 
 class AppointmentCreate(SQLModel):
     patient_id: int
-    professional_id: int
     date_time: datetime
     notes: Optional[str] = None
 
 class AppointmentUpdate(SQLModel):
     patient_id: Optional[int] = None
-    professional_id: Optional[int] = None
     date_time: Optional[datetime] = None
     status: Optional[str] = None
     notes: Optional[str] = None

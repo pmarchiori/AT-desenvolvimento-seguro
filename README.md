@@ -12,6 +12,15 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+Crie o arquivo local de configuração a partir do modelo:
+
+```bash
+cp .env.example .env
+```
+
+Edite `.env` e substitua todos os placeholders por valores próprios. O arquivo
+`.env` contém segredos e está ignorado pelo Git.
+
 ## Executar os testes
 
 ```bash

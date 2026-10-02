@@ -1,5 +1,7 @@
 import uvicorn
+from dotenv import load_dotenv
 from fastapi import FastAPI
+load_dotenv()
 
 from database.connection import conn
 from routes.appointments import appointment_router

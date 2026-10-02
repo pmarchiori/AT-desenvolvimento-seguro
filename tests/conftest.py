@@ -1,6 +1,12 @@
+import os
+
 import pytest
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, SQLModel, create_engine
+
+os.environ["SECRET_KEY"] = "chave-exclusiva-do-ambiente-de-testes"
+os.environ["MFA_CODE"] = "123456"
+os.environ["COOKIE_SECURE"] = "false"
 
 from database.connection import get_session
 from main import app

@@ -10,7 +10,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/signin", auto_error=False)
 async def authenticate(
     request: Request,
     bearer_token: Optional[str] = Depends(oauth2_scheme),
-) -> str:
+) -> dict:
     token = bearer_token or request.cookies.get("access_token")
     if not token:
         raise HTTPException(
@@ -23,4 +23,4 @@ async def authenticate(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Token inválido ou expirado",
         )
-    return decoded_token["user"]
+    return decoded_token

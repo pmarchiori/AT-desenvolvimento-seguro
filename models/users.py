@@ -1,5 +1,4 @@
-from typing import Optional
-
+from typing import Literal, Optional
 from sqlmodel import Field, SQLModel
 
 class User(SQLModel, table=True):
@@ -9,6 +8,14 @@ class User(SQLModel, table=True):
     password: str
     role: str = Field(default="recepcionista")
 
-class UserSignIn(SQLModel):
+class UserCreate(SQLModel):
+    name: str
     email: str
     password: str
+
+class UserAdminCreate(UserCreate):
+    role: Literal["admin", "recepcionista", "profissional"]
+
+class MFARequest(SQLModel):
+    mfa_token: str
+    code: str

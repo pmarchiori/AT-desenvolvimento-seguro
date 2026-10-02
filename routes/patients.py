@@ -27,4 +27,7 @@ async def get_all_patients(
     session: Session = Depends(get_session),
     current_user=Depends(allow_read_patients),
 ):
-    return session.exec(select(Patient)).all()
+    statement = select(Patient)
+    if current_user.role == "profissional":
+        statement = statement.where(Patient.professional_id == current_user.id)
+    return session.exec(statement).all()

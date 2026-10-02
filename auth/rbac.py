@@ -11,9 +11,10 @@ class RoleChecker:
 
     async def __call__(
         self,
-        email: str = Depends(authenticate),
+        token_data: dict = Depends(authenticate),
         session: Session = Depends(get_session),
     ) -> User:
+        email = token_data["user"]
         user = session.exec(select(User).where(User.email == email)).first()
         if not user:
             raise HTTPException(
@@ -24,5 +25,10 @@ class RoleChecker:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"Acesso negado. Seu perfil ({user.role}) não tem permissão para esta ação.",
+            )
+        if user.role == "admin" and not token_data.get("mfa_verified"):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="MFA obrigatório para contas administrativas",
             )
         return user

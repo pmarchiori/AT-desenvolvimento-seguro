@@ -8,3 +8,4 @@ class Patient(SQLModel, table=True):
     cpf: str = Field(index=True, sa_column_kwargs={"unique": True})
     phone: str
     email: Optional[str] = None
+    professional_id: Optional[int] = Field(default=None, foreign_key="user.id")
