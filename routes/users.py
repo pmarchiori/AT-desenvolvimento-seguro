@@ -79,6 +79,7 @@ async def sign_user_in(
             expires_in=300,
             mfa_verified=False,
             token_type="mfa",
+            role=user.role,
         )
         return {
             "mfa_required": True,
@@ -87,7 +88,12 @@ async def sign_user_in(
         }
 
     return token_response(
-        create_access_token(user.email, mfa_verified=True)
+        create_access_token(
+            user.email,
+            mfa_verified=True,
+            role=user.role,
+            scopes=["appointments:read", "appointments:write"],
+        )
     )
 
 @user_router.post("/mfa")
@@ -116,7 +122,12 @@ async def verify_mfa(
         )
 
     return token_response(
-        create_access_token(user.email, mfa_verified=True)
+        create_access_token(
+            user.email,
+            mfa_verified=True,
+            role=user.role,
+            scopes=["appointments:read", "appointments:write", "users:admin"],
+        )
     )
 
 @user_router.get("/admin")

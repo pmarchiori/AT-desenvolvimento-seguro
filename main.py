@@ -5,6 +5,7 @@ load_dotenv()
 
 from database.connection import conn
 from routes.appointments import appointment_router
+from routes.integrations import integration_router
 from routes.patients import patient_router
 from routes.users import user_router
 
@@ -16,6 +17,7 @@ app = FastAPI(
 app.include_router(user_router, prefix="/user")
 app.include_router(patient_router, prefix="/patient")
 app.include_router(appointment_router, prefix="/appointment")
+app.include_router(integration_router, prefix="/oauth")
 
 @app.get("/")
 async def home():

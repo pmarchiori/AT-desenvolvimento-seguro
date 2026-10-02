@@ -23,4 +23,9 @@ async def authenticate(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Token inválido ou expirado",
         )
+    if decoded_token.get("actor_type") != "user":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Token de usuário obrigatório",
+        )
     return decoded_token

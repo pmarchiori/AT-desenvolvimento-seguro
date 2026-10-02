@@ -12,13 +12,21 @@ def create_access_token(
     expires_in: int = 3600,
     mfa_verified: bool = False,
     token_type: str = "access",
+    actor_type: str = "user",
+    role: str = None,
+    scopes: list = None,
 ):
     payload = {
         "user": user,
+        "sub": user,
         "expires": time.time() + expires_in,
         "mfa_verified": mfa_verified,
         "token_type": token_type,
+        "actor_type": actor_type,
+        "scope": " ".join(scopes or []),
     }
+    if role:
+        payload["role"] = role
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 def verify_access_token(token: str):

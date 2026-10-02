@@ -7,6 +7,8 @@ from sqlmodel import Session, SQLModel, create_engine
 os.environ["SECRET_KEY"] = "chave-exclusiva-do-ambiente-de-testes"
 os.environ["MFA_CODE"] = "123456"
 os.environ["COOKIE_SECURE"] = "false"
+os.environ["LAB_CLIENT_ID"] = "laboratorio-teste"
+os.environ["LAB_CLIENT_SECRET"] = "segredo-laboratorio-teste"
 
 from database.connection import get_session
 from main import app
