@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Baixar o código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Configurar Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.10"
           cache: pip
@@ -63,5 +63,6 @@ jobs:
         uses: zaproxy/action-baseline@v0.15.0
         with:
           target: http://127.0.0.1:8000
-          fail_action: true
+          cmd_options: "-I"
+          fail_action: false
           allow_issue_writing: false

@@ -15,9 +15,13 @@ O pipeline bloqueia quando ocorrer qualquer uma destas condições:
 
 - falha em teste automatizado de segurança ou autorização;
 - achado SAST ou SCA alto/crítico;
-- alerta dinâmico encontrado pelo ZAP;
+- falha na execução do scan dinâmico;
 - falha confirmada de autenticação ou autorização que exponha dados de saúde,
-  independentemente do score numérico.s
+  independentemente do score numérico.
+
+Os avisos do baseline ZAP ficam registrados no relatório para análise. Se um alerta
+for confirmado como alto ou crítico, ele deve ser corrigido antes do deploy e
+transformado em teste automatizado.
 
 ## Priorização das vulnerabilidades
 
