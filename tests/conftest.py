@@ -12,6 +12,7 @@ os.environ["LAB_CLIENT_SECRET"] = "segredo-laboratorio-teste"
 
 from database.connection import get_session
 from main import app
+from security.http import login_rate_limiter
 
 #importação dos modelos
 from models.appointments import Appointment
@@ -33,6 +34,7 @@ app.dependency_overrides[get_session] = override_get_session
 
 @pytest.fixture(autouse=True)
 def reset_test_database():
+    login_rate_limiter.reset()
     SQLModel.metadata.drop_all(test_engine)
     SQLModel.metadata.create_all(test_engine)
     yield
