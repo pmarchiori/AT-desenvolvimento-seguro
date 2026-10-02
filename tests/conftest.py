@@ -4,6 +4,7 @@ import pytest
 from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, SQLModel, create_engine
 
+os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 os.environ["SECRET_KEY"] = "chave-exclusiva-do-ambiente-de-testes"
 os.environ["MFA_CODE"] = "123456"
 os.environ["COOKIE_SECURE"] = "false"

@@ -1,17 +1,24 @@
 import os
+from sqlalchemy import inspect
 from sqlmodel import SQLModel, Session, create_engine, select
 
-database_file = "clinica.db"
-sqlite_url = f"sqlite:///{database_file}"
+from database.settings import database_settings
 
-connect_args = {"check_same_thread": False}
-engine_url = create_engine(sqlite_url, connect_args=connect_args)
+connect_args = (
+    {"check_same_thread": False}
+    if database_settings.database_url.startswith("sqlite")
+    else {}
+)
+engine_url = create_engine(
+    database_settings.database_url,
+    connect_args=connect_args,
+)
 
 def conn():
     SQLModel.metadata.create_all(engine_url)
     with engine_url.begin() as connection:
         columns = {
-            row[1] for row in connection.exec_driver_sql("PRAGMA table_info(patient)")
+            column["name"] for column in inspect(connection).get_columns("patient")
         }
         if "professional_id" not in columns:
             connection.exec_driver_sql(
