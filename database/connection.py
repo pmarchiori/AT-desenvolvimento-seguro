@@ -1,5 +1,4 @@
 import os
-from sqlalchemy import inspect
 from sqlmodel import SQLModel, Session, create_engine, select
 
 from database.settings import database_settings
@@ -16,14 +15,6 @@ engine_url = create_engine(
 
 def conn():
     SQLModel.metadata.create_all(engine_url)
-    with engine_url.begin() as connection:
-        columns = {
-            column["name"] for column in inspect(connection).get_columns("patient")
-        }
-        if "professional_id" not in columns:
-            connection.exec_driver_sql(
-                "ALTER TABLE patient ADD COLUMN professional_id INTEGER"
-            )
 
     admin_email = os.getenv("INITIAL_ADMIN_EMAIL")
     admin_password = os.getenv("INITIAL_ADMIN_PASSWORD")
