@@ -1,0 +1,67 @@
+name: Security Gate
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  security-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt bandit
+
+      - name: Executar testes
+        env:
+          DATABASE_URL: sqlite:///:memory:
+          SECRET_KEY: chave-exclusiva-do-ci-com-tamanho-adequado
+          MFA_CODE: "123456"
+          LAB_CLIENT_ID: laboratorio-teste
+          LAB_CLIENT_SECRET: segredo-laboratorio-teste
+        run: python -m pytest -q
+
+      - name: Executar análise estática
+        run: bandit -r . -x ./.venv,./tests -lll -iii
+
+      - name: Analisar dependências
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+
+      - name: Iniciar API
+        env:
+          DATABASE_URL: sqlite:////tmp/clinica-ci.db
+          SECRET_KEY: chave-exclusiva-do-ci-com-tamanho-adequado
+          MFA_CODE: "123456"
+          LAB_CLIENT_ID: laboratorio-teste
+          LAB_CLIENT_SECRET: segredo-laboratorio-teste
+        run: |
+          uvicorn main:app --host 0.0.0.0 --port 8000 &
+          for attempt in {1..20}; do
+            curl --fail --silent http://127.0.0.1:8000/ && break
+            sleep 1
+          done
+
+      - name: Executar análise dinâmica
+        uses: zaproxy/action-baseline@v0.15.0
+        with:
+          target: http://127.0.0.1:8000
+          fail_action: true
+          allow_issue_writing: false

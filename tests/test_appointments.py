@@ -166,6 +166,61 @@ def test_profissional_nao_acessa_consulta_de_outro_profissional() -> None:
     assert response.status_code == 403
     assert "próprias consultas" in response.json()["detail"]
 
+def test_profissional_nao_altera_consulta_de_outro_profissional() -> None:
+    seed_database()
+    with Session(test_engine) as session:
+        session.add(
+            Appointment(
+                id=1,
+                patient_id=1,
+                professional_id=4,
+                date_time=datetime(2026, 10, 10, 11, 0),
+            )
+        )
+        session.commit()
+
+    async def execute():
+        async with AsyncClient(
+            transport=ASGITransport(app=app),
+            base_url="http://app",
+        ) as client:
+            token = await login(client, "house@clinica.com")
+            return await client.put(
+                "/appointment/edit/1",
+                headers={"Authorization": f"Bearer {token}"},
+                json={"status": "cancelada"},
+            )
+
+    response = asyncio.run(execute())
+    assert response.status_code == 403
+
+def test_profissional_nao_exclui_consulta_de_outro_profissional() -> None:
+    seed_database()
+    with Session(test_engine) as session:
+        session.add(
+            Appointment(
+                id=1,
+                patient_id=1,
+                professional_id=4,
+                date_time=datetime(2026, 10, 10, 11, 0),
+            )
+        )
+        session.commit()
+
+    async def execute():
+        async with AsyncClient(
+            transport=ASGITransport(app=app),
+            base_url="http://app",
+        ) as client:
+            token = await login(client, "house@clinica.com")
+            return await client.delete(
+                "/appointment/delete/1",
+                headers={"Authorization": f"Bearer {token}"},
+            )
+
+    response = asyncio.run(execute())
+    assert response.status_code == 403
+
 def test_admin_conclui_mfa_e_acessa_rota_restrita() -> None:
     seed_database()
 

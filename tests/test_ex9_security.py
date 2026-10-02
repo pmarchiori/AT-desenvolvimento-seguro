@@ -4,6 +4,7 @@ from datetime import datetime
 from httpx import ASGITransport, AsyncClient
 from sqlmodel import Session
 
+from auth.jwt_handler import create_access_token
 from main import app
 from models.appointments import Appointment
 from tests.conftest import test_engine
@@ -130,3 +131,23 @@ def test_middleware_rejeita_jwt_invalido() -> None:
     assert response.status_code == 401
     assert response.json()["detail"] == "Token inválido ou expirado"
 
+def test_admin_sem_mfa_nao_acessa_rota_administrativa() -> None:
+    seed_database()
+    token = create_access_token(
+        "admin@clinica.com",
+        mfa_verified=False,
+        role="admin",
+    )
+
+    async def execute():
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://app"
+        ) as client:
+            return await client.get(
+                "/user/admin",
+                headers={"Authorization": f"Bearer {token}"},
+            )
+
+    response = asyncio.run(execute())
+    assert response.status_code == 403
+    assert response.json()["detail"] == "MFA obrigatório para contas administrativas"
